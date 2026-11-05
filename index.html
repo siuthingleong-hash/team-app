@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>团队 App</title><meta name="robots" content="noindex"><meta name="theme-color" content="#14233f">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="团队 App">
+<style>
+/* Layout: the team photo opens the page, then what the team stands for, then the tools sorted into folders. Navy and gold pick up the awards-night photo. */
+:root{--bg:#f6f2e9;--card:#fffdf8;--fg:#14233f;--muted:#5f6778;--line:#e3dac6;--accent:#14233f;--accent-fg:#fff;--gold:#94701f;--tile:#f3ead5;--danger:#b3392f;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1526;--card:#16213a;--fg:#f1eee6;--muted:#a5adbf;--line:#2b3753;--accent:#e2bf6e;--accent-fg:#14233f;--gold:#e2bf6e;--tile:#232f4d;--danger:#ef8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding-bottom:max(28px,env(safe-area-inset-bottom));padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+main{max-width:560px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+h1{font-size:22px;margin:0}h2{font-size:17px;margin:0}
+#busy,#login{padding:max(20px,env(safe-area-inset-top)) 16px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:10px;min-width:0}
+label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+input{font:600 18px ui-monospace,Consolas,monospace;letter-spacing:.05em;text-transform:uppercase;text-align:center;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:11px 8px;width:100%;min-width:0}
+.btn{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:10px 14px;cursor:pointer;min-height:44px}
+.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.muted{color:var(--muted);font-size:14px;margin:0}.err{color:var(--danger);font-size:14px;margin:0;min-height:1.2em}
+ol{margin:0;padding-left:20px}
+.hero{position:relative;aspect-ratio:4/3;max-height:62vh;width:100%;overflow:hidden;background:linear-gradient(150deg,#14233f,#2c3f66 60%,#94701f);color:#fff}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 62%}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,21,38,.55) 0,rgba(13,21,38,0) 26%,rgba(13,21,38,0) 58%,rgba(13,21,38,.88) 100%)}
+.hero-top,.hero-end{position:absolute;z-index:1;left:16px;right:16px}
+.hero-top{top:max(12px,env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hero-top h1{font-size:18px;text-shadow:0 1px 6px rgba(0,0,0,.6);min-width:0;overflow-wrap:anywhere}
+.out{font:inherit;font-size:13px;font-weight:600;color:#fff;background:rgba(13,21,38,.5);border:1px solid rgba(255,255,255,.45);border-radius:99px;padding:7px 14px;min-height:36px;cursor:pointer;flex:none}
+.hero-end{bottom:14px}
+.goal-label{font-size:13px;font-weight:600;color:#f0d48c;letter-spacing:.08em}
+.goal{font-size:clamp(28px,8.5vw,38px);font-weight:800;line-height:1.15;margin:0}
+.page{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;padding:0 16px}
+.mission{border-top:3px solid var(--gold)}
+.mission h2{color:var(--gold);font-size:14px;letter-spacing:.08em}
+.mission ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.mission li{font-size:16px;font-weight:600;line-height:1.4;padding-left:18px;position:relative}
+.mission li::before{content:"";position:absolute;left:2px;top:.48em;width:7px;height:7px;background:var(--gold);transform:rotate(45deg)}
+.whisper{text-decoration:none;color:var(--fg);background:var(--tile);border-color:var(--gold);grid-template-columns:auto minmax(0,1fr);align-items:start;gap:4px 12px}
+.whisper-face{font-size:30px;line-height:1.1;grid-row:span 2}.whisper-label{font-size:13px;font-weight:700;color:var(--gold)}
+.whisper-text{font-size:16px;font-weight:600;line-height:1.45;overflow-wrap:anywhere}
+.folder{display:grid;gap:10px}
+.folder-title{font-size:17px;font-weight:800;margin:0;padding-left:10px;border-left:4px solid var(--gold);line-height:1.25}
+.list{display:grid;gap:18px}
+.app-item{background:var(--card);border:1px solid var(--line);border-radius:14px;display:grid;overflow:hidden}
+.app-link{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--fg);padding:14px}
+.app-icon{flex:none;width:46px;height:46px;border-radius:12px;background:var(--tile);display:grid;place-items:center;font-size:24px}
+.app-text{min-width:0;flex:1;font-weight:700;font-size:16px;line-height:1.3;overflow-wrap:anywhere}.app-text small{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:3px}
+.chev{flex:none;color:var(--muted);font-size:22px;line-height:1}
+.guide-link{display:block;text-decoration:none;color:var(--gold);font-size:14px;font-weight:600;padding:11px 14px;border-top:1px solid var(--line)}
+[hidden]{display:none!important}
+</style></head>
+<body><main>
+<div id="busy" class="muted">载入中…</div>
+<div id="login" hidden style="display:grid;gap:14px">
+  <h1>团队 App</h1>
+  <section class="card" id="install" hidden>
+    <h2>第 1 步：加到手机主画面</h2>
+    <div id="ios" hidden><ol><li>用 <b>Safari</b> 打开这个 link</li><li>按下面的「分享」按钮</li><li>选「加入主画面 / Add to Home Screen」</li><li>从主画面打开，再输入 Access Code</li></ol></div>
+    <div id="android" hidden><ol><li>用 <b>Chrome</b> 打开这个 link</li><li>按右上角 ⋮</li><li>选「加到主屏幕 / Add to Home screen」</li><li>从主画面打开，再输入 Access Code</li></ol></div>
+    <button class="btn" id="bInstall" hidden type="button">安装到手机</button>
+  </section>
+  <form class="card" id="f">
+    <h2 id="codeTitle">输入 Access Code</h2>
+    <p class="muted">Access Code 由 Estée 提供。</p>
+    <label>Access Code<input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX" required></label>
+    <p class="err" id="err" role="alert"></p>
+    <button class="btn primary" id="go">进入</button>
+  </form>
+</div>
+<div id="portal" hidden style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px">
+  <header class="hero">
+    <img id="photo" alt="团队合照" hidden>
+    <div class="hero-top"><h1 id="hi"></h1><button class="out" id="bOut" type="button">登出</button></div>
+    <div class="hero-end"><div class="goal-label">我们的目标</div><p class="goal" id="goal"></p></div>
+  </header>
+  <div class="page">
+    <a class="card whisper" id="whisper" href="angel.html" hidden><span class="whisper-face" id="whisperFace" aria-hidden="true"></span><span class="whisper-label">👼 小天使想对你说</span><span class="whisper-text" id="whisperText"></span></a>
+    <section class="card mission"><h2>我们的使命</h2><ul id="mission"></ul></section>
+    <div class="list" id="apps"></div>
+  </div>
+</div>
+</main>
+<script src="vault.js"></script><script src="common.js"></script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+function view(id){['busy','login','portal'].forEach(function(v){$(v).hidden=v!==id;});}
+var standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,ua=navigator.userAgent;
+var isIos=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),isAndroid=/Android/.test(ua);
+if(!standalone&&(isIos||isAndroid)){$('install').hidden=false;$(isIos?'ios':'android').hidden=false;$('codeTitle').textContent='第 2 步：输入 Access Code';}
+var prompted;addEventListener('beforeinstallprompt',function(e){e.preventDefault();prompted=e;$('bInstall').hidden=false;$('bInstall').onclick=function(){prompted.prompt();};});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+function showPortal(r){
+  $('hi').textContent='Hi '+r.name;var box=$('apps');box.textContent='';
+  showTeam(r.team);
+  if(!r.apps.length){var p=document.createElement('p');p.className='card muted';p.textContent='你还没有开放的 App，请联系 Estée。';box.appendChild(p);}
+  var folders={};
+  $('whisper').hidden=true;
+  if(r.angel){showWhisper(r.angel);r.apps=r.apps.concat([{id:'',group:'小天使 Angel Programme',icon:'👼',name:'打气墙',desc:'不写名字互相打气，鼓励到人就能集章',href:'angel.html'}]);}
+  r.apps.forEach(function(a){
+    var f=folders[a.group];
+    if(!f){f=folders[a.group]=document.createElement('section');f.className='folder';if(a.group){var t=document.createElement('h2');t.className='folder-title';t.textContent=a.group;f.appendChild(t);}box.appendChild(f);}
+    var w=document.createElement('div');w.className='app-item';var l=document.createElement('a');l.className='app-link';l.href=a.href||'app.html?id='+encodeURIComponent(a.id);
+    if(a.icon){var i=document.createElement('span');i.className='app-icon';i.setAttribute('aria-hidden','true');i.textContent=a.icon;l.appendChild(i);}
+    var x=document.createElement('span');x.className='app-text';x.textContent=a.name;if(a.desc){var s=document.createElement('small');s.textContent=a.desc;x.appendChild(s);}l.appendChild(x);
+    var c=document.createElement('span');c.className='chev';c.setAttribute('aria-hidden','true');c.textContent='›';l.appendChild(c);w.appendChild(l);
+    if(a.guide){var g=document.createElement('a');g.className='guide-link';g.href='app.html?id='+encodeURIComponent(a.id)+'&guide=1';g.textContent='📖 使用指南';w.appendChild(g);}f.appendChild(w);});
+  view('portal');
+}
+// one of the recent messages from someone else, different each time, so a member sees it without looking for it; if the wall can't be reached the page just goes without
+function showWhisper(angel){
+  fetch(angel.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'list',token:angel.token})}).then(function(x){return x.json();}).then(function(s){
+    var others=(s.wall||[]).filter(function(m){return !m.mine;}).slice(0,10);if(!others.length)return;
+    var m=others[Math.floor(Math.random()*others.length)];$('whisperFace').textContent=m.emoji;$('whisperText').textContent=m.text;$('whisper').hidden=false;
+  }).catch(function(){});
+}
+function showTeam(t){
+  $('goal').textContent=t.goal;
+  var m=$('mission');m.textContent='';t.mission.forEach(function(x){var li=document.createElement('li');li.textContent=x;m.appendChild(li);});
+  // without the photo the header keeps its navy and gold background, so a slow network still shows a finished page
+  Portal.bytes('data/a/'+t.photo.file+'.bin').then(function(b){return Vault.open(t.photo.key,b);}).then(function(p){var img=$('photo');img.src=URL.createObjectURL(new Blob([p],{type:'image/jpeg'}));img.hidden=false;}).catch(function(){});
+}
+function start(){
+  var s=Portal.saved();
+  if(!s){view('login');return;}
+  Portal.record(s).then(showPortal).catch(function(e){
+    // only a file that is really gone, or no longer opens with this key, ends the sign-in; being offline does not
+    if(e.gone||e.name==='OperationError'){Portal.forget();$('err').textContent='你的 Access Code 已停用，请联系 Estée。';view('login');return;}
+    $('busy').textContent='连不上网络，请检查后重新打开。';view('busy');
+  });
+}
+$('f').addEventListener('submit',function(e){e.preventDefault();var go=$('go'),err=$('err');go.disabled=true;err.textContent='正在核对…';
+  Portal.bytes('data/site.json').then(function(b){return JSON.parse(new TextDecoder().decode(b));}).then(function(c){return Vault.session($('code').value,c.salt,c.iter);}).then(function(s){return Portal.record(s).then(function(r){Portal.remember(s);err.textContent='';$('code').value='';showPortal(r);});})
+  .catch(function(x){err.textContent=x.gone||x.name==='OperationError'?'Access Code 不正确或已停用，请向 Estée 索取。':'连不上网络，请检查后再试。';}).finally(function(){go.disabled=false;});});
+$('bOut').onclick=function(){if(!confirm('要登出吗？再进入时要重新输入 Access Code。'))return;Portal.forget();view('login');};
+start();
+})();
+</script></body></html>

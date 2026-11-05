@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Angel Programme</title><meta name="robots" content="noindex"><meta name="theme-color" content="#14233f">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="团队 App">
+<style>
+/* Layout: my stamp card first (what I have given), then the box to encourage someone, then the wall of everyone's messages. Same navy and gold as the portal, softer and rounder because this page is meant to feel warm. */
+:root{--bg:#f6f2e9;--card:#fffdf8;--fg:#14233f;--muted:#5f6778;--line:#e3dac6;--accent:#14233f;--accent-fg:#fff;--gold:#94701f;--tile:#f3ead5;--note:#fdf6e3;--danger:#b3392f;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1526;--card:#16213a;--fg:#f1eee6;--muted:#a5adbf;--line:#2b3753;--accent:#e2bf6e;--accent-fg:#14233f;--gold:#e2bf6e;--tile:#232f4d;--note:#1d2a47;--danger:#ef8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(72px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+main{max-width:560px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+h1{font-size:26px;line-height:1.2;margin:0}h2{font-size:17px;margin:0}
+p{margin:0}.muted{color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.me-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.level{display:flex;align-items:center;gap:10px;min-width:0}.level-face{font-size:36px;line-height:1}.level b{display:block;overflow-wrap:anywhere}
+.points{text-align:right;flex:none;font-size:13px;color:var(--muted)}.points b{display:block;font-size:30px;line-height:1.1;color:var(--gold)}
+.stamps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.stamp{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:clamp(20px,6.5vw,28px);border:2px dashed var(--line)}
+.stamp.on{background:var(--tile);border:2px solid var(--gold);animation:pop .35s cubic-bezier(.2,.8,.3,1.3) both}
+@keyframes pop{from{transform:scale(.5)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.stamp.on{animation:none}}
+.ladder{display:flex;justify-content:space-between;gap:4px;font-size:12px;color:var(--muted);text-align:center}
+.ladder div{flex:1;min-width:0;border-radius:10px;padding:4px 0}.ladder span{display:block;font-size:20px;line-height:1.3}
+.ladder .now{background:var(--tile);color:var(--fg);font-weight:700}
+.picker{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+.pick{font-size:22px;line-height:1;aspect-ratio:1;border:1px solid var(--line);border-radius:12px;background:transparent;cursor:pointer;padding:0;touch-action:manipulation}
+.pick[aria-pressed="true"]{background:var(--tile);border:2px solid var(--gold)}
+textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%;min-height:92px;resize:vertical}
+.pick:focus-visible,textarea:focus-visible,.send:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.send{font:inherit;font-weight:700;background:var(--accent);color:var(--accent-fg);border:1px solid var(--accent);border-radius:12px;padding:12px;min-height:46px;cursor:pointer}
+.send:disabled{opacity:.6}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.say{min-height:1.4em;font-size:14px;font-weight:600}.say.bad{color:var(--danger)}.say.good{color:var(--gold)}
+.wall{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.note{background:var(--note);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.note-face{font-size:30px;line-height:1.1;flex:none}.note-body{min-width:0;flex:1;display:grid;gap:6px}.note-text{overflow-wrap:anywhere;white-space:pre-wrap}
+.note-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.note time{font-size:12px;color:var(--muted)}
+.warm{font:inherit;font-size:13px;font-weight:600;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:99px;padding:6px 12px;min-height:36px;cursor:pointer;touch-action:manipulation}
+.warm[aria-pressed="true"]{background:var(--tile);border-color:var(--gold)}
+.warm:disabled{cursor:default;opacity:1}.warm:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.warmed{font-size:14px;font-weight:600;color:var(--gold)}
+[hidden]{display:none!important}
+.back{position:fixed;z-index:10;left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));font:600 13px system-ui,sans-serif;background:#14233f;color:#fff;padding:8px 12px;border-radius:99px;text-decoration:none;opacity:.9}
+</style></head>
+<body><main>
+<header><h1>👼 Angel Programme</h1><p class="muted">不写名字，互相打气。你的一句话，可能就是别人今天继续的力气。</p></header>
+<p id="msg" class="muted">载入中…</p>
+<div id="board" hidden style="display:grid;grid-template-columns:minmax(0,1fr);gap:16px">
+  <section class="card" aria-labelledby="meTitle">
+    <div class="me-top">
+      <div class="level"><span class="level-face" id="face" aria-hidden="true"></span><div><b id="meTitle"></b><span class="muted" id="next"></span></div></div>
+      <div class="points"><b id="points"></b>我的分数</div>
+    </div>
+    <div class="stamps" id="stamps" role="img"></div>
+    <div class="ladder" id="ladder"></div>
+    <p class="warmed" id="warmed" hidden></p>
+    <p class="muted">留言可以盖章，别人按「暖到我了」再盖一个 💖。分数和集章只有你自己看得到。</p>
+  </section>
+  <form class="card" id="form">
+    <h2>给团队打打气</h2>
+    <div class="picker" id="picker" role="group" aria-label="选一个 emoji"></div>
+    <textarea id="text" maxlength="200" aria-label="留言内容" placeholder="想对团友说什么？不用写名字，也不要写客户资料。"></textarea>
+    <div class="row"><span id="count">0 / 200</span><span id="today"></span></div>
+    <p class="say" id="say" role="status"></p>
+    <button class="send" id="send">送出鼓励</button>
+  </form>
+  <section style="display:grid;grid-template-columns:minmax(0,1fr);gap:10px">
+    <h2>团队的打气墙</h2>
+    <div class="wall" id="wall"></div>
+  </section>
+</div>
+</main>
+<a class="back" href="./" aria-label="回到入口">← 入口</a>
+<script src="vault.js"></script><script src="common.js"></script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var LEVELS=[[0,'🌱','小天使种子'],[10,'🌷','发芽小天使'],[30,'🌸','开花小天使'],[60,'🌟','闪亮小天使'],[100,'👼','守护大天使']];
+var angel,chosen='';
+function say(text,kind){$('say').textContent=text;$('say').className='say'+(kind?' '+kind:'');}
+function call(body){
+  body.token=angel.token;
+  // plain text keeps the browser from asking Google's server for extra permission first, which it would refuse
+  return fetch(angel.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).then(function(r){if(!r.ok)throw new Error('network');return r.json();});
+}
+function when(iso){
+  var d=new Date(iso),days=Math.floor((Date.now()-d.getTime())/86400000);
+  if(days<1&&new Date().toDateString()===d.toDateString())return '今天';
+  if(days<2)return '昨天';
+  if(days<7)return days+' 天前';
+  return (d.getMonth()+1)+' 月 '+d.getDate()+' 日';
+}
+function drawMe(s){
+  var count=s.stampCount,at=LEVELS[0],after=null;
+  LEVELS.forEach(function(l){if(count>=l[0])at=l;else if(!after)after=l;});
+  $('face').textContent=at[1];$('meTitle').textContent=at[2];$('points').textContent=s.points;
+  $('next').textContent=after?'再集 '+(after[0]-count)+' 个章就是'+after[2]:'已经是最高等级了';
+  var filled=count===0?0:(count%s.cardSize||s.cardSize),box=$('stamps'),shown=s.stamps.slice(-filled);box.textContent='';
+  box.setAttribute('aria-label','这张集章卡已盖 '+filled+' 个，共 '+s.cardSize+' 格');
+  for(var i=0;i<s.cardSize;i++){var c=document.createElement('div');c.className='stamp'+(i<filled?' on':'');c.textContent=i<filled?(shown[i]||'⭐'):'';box.appendChild(c);}
+  var lad=$('ladder');lad.textContent='';
+  LEVELS.forEach(function(l){var d=document.createElement('div');if(l===at)d.className='now';var e=document.createElement('span');e.textContent=l[1];e.setAttribute('aria-hidden','true');d.appendChild(e);d.appendChild(document.createTextNode(l[0]+' 章'));lad.appendChild(d);});
+  $('warmed').hidden=!s.warmed;$('warmed').textContent='💖 你的留言已经暖到团友 '+s.warmed+' 次';
+  $('today').textContent=s.scoredToday<s.scoredPerDay?'今天还可得 '+(s.scoredPerDay-s.scoredToday)*s.pointsEach+' 分':'今天的分数拿满了，留言还是很暖';
+}
+function drawPicker(list){
+  if($('picker').children.length)return;
+  chosen=list[0];
+  list.forEach(function(e){var b=document.createElement('button');b.type='button';b.className='pick';b.textContent=e;b.setAttribute('aria-label','选 '+e);b.setAttribute('aria-pressed',String(e===chosen));
+    b.onclick=function(){chosen=e;[].forEach.call($('picker').children,function(x){x.setAttribute('aria-pressed',String(x===b));});};$('picker').appendChild(b);});
+}
+function drawWall(list){
+  var w=$('wall');w.textContent='';
+  if(!list.length){var p=document.createElement('p');p.className='muted';p.textContent='还没有人留言，你来当第一位天使吧 👼';w.appendChild(p);return;}
+  list.forEach(function(m){var n=document.createElement('article');n.className='note';var f=document.createElement('span');f.className='note-face';f.setAttribute('aria-hidden','true');f.textContent=m.emoji;
+    var body=document.createElement('div');body.className='note-body';var t=document.createElement('div');t.className='note-text';t.textContent=m.text;
+    var foot=document.createElement('div');foot.className='note-foot';var d=document.createElement('time');d.dateTime=m.time;d.textContent=when(m.time);
+    var h=document.createElement('button');h.type='button';h.className='warm';h.setAttribute('aria-pressed',String(m.hearted));
+    h.textContent=(m.mine?'💖 你写的':m.hearted?'💖 被暖到了':'🤍 暖到我了')+(m.hearts?' · '+m.hearts:'');
+    if(m.mine||m.hearted)h.disabled=true;else h.onclick=function(){warm(h,m.id);};
+    foot.appendChild(d);foot.appendChild(h);body.appendChild(t);body.appendChild(foot);n.appendChild(f);n.appendChild(body);w.appendChild(n);});
+}
+function warm(btn,id){
+  btn.disabled=true;
+  call({action:'heart',id:id}).then(function(s){if(s.ok)draw(s);else{btn.disabled=false;say('这条留言已经不在了。','bad');}}).catch(function(){btn.disabled=false;say('连不上，请再按一次。','bad');});
+}
+function draw(s){drawPicker(s.emoji);drawMe(s);drawWall(s.wall);$('msg').hidden=true;$('board').hidden=false;}
+var ERR={'too many today':'今天的留言够多了，明天再来吧 😊','not a member':'你的权限已更新，请回到入口重新打开。','too long':'留言最多 200 个字。','empty':'先写一句话吧。'};
+$('text').addEventListener('input',function(){$('count').textContent=$('text').value.length+' / 200';});
+$('form').addEventListener('submit',function(e){e.preventDefault();
+  var text=$('text').value.trim();if(!text){say('先写一句话吧。','bad');return;}
+  $('send').disabled=true;say('送出中…');
+  call({action:'post',emoji:chosen,text:text}).then(function(s){
+    if(!s.ok){say(ERR[s.error]||'送不出去，请再试一次。','bad');return;}
+    $('text').value='';$('count').textContent='0 / 200';draw(s);
+    say(s.earned?'谢谢你！+'+s.earned+' 分，盖了一个章 '+chosen:'谢谢你！今天的分数已经拿满了 💖','good');
+  }).catch(function(){say('连不上，留言还在框里，请稍后再送一次。','bad');}).finally(function(){$('send').disabled=false;});
+});
+var s=Portal.saved();
+if(!s){location.replace('./');return;}
+Portal.record(s).then(function(r){
+  if(!r.angel){$('msg').textContent='Angel Programme 还没有开放。';return;}
+  angel=r.angel;
+  return call({action:'list'}).then(function(st){if(!st.ok)throw new Error(st.error);draw(st);});
+}).catch(function(e){
+  if(e.gone||e.name==='OperationError'){Portal.forget();location.replace('./');return;}
+  $('msg').textContent='连不上打气墙，请检查网络后重新打开。';
+});
+})();
+</script></body></html>

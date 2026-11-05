@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>团队 App</title><meta name="robots" content="noindex">
+<style>body{margin:0;padding:32px 16px;font:16px/1.5 system-ui,sans-serif;background:#0f1b1f;color:#e8f0ee}a{color:#3cb99f}</style></head>
+<body><p id="msg">载入中…</p>
+<script src="vault.js"></script><script src="common.js"></script>
+<script>
+(function(){
+var msg=document.getElementById('msg');
+function say(text){msg.textContent=text+' ';var a=document.createElement('a');a.href='./';a.textContent='回到入口';msg.appendChild(a);}
+var s=Portal.saved();
+if(!s){location.replace('./');return;}
+var q=new URLSearchParams(location.search),id=q.get('id'),guide=q.get('guide')==='1';
+Portal.record(s).then(function(r){
+  var a=r.apps.filter(function(x){return x.id===id;})[0];
+  if(!a){say('你没有这个 App 的权限，如有需要请联系 Estée。');return;}
+  if(guide&&!a.guide){say('这个 App 还没有指南。');return;}
+  return Portal.bytes('data/a/'+a.file+(guide?'-g':'')+'.bin').then(function(b){return Vault.open(a.key,b);}).then(function(p){
+    // the page is written in place, so the app keeps this address and this site's saved data
+    var html=new TextDecoder().decode(p);document.open();document.write(html);document.close();
+  },function(){
+    // the member's own record still opened, so this is a publish in progress, not a removal: keep them signed in
+    say('App 正在更新，请等几分钟再打开。');
+  });
+}).catch(function(e){
+  if(e.gone||e.name==='OperationError'){Portal.forget();location.replace('./');return;}
+  say('连不上网络，请检查后再试。');
+});
+})();
+</script></body></html>
